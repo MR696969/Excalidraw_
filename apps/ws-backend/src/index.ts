@@ -3,7 +3,8 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { JWT_SECRET } from '@repo/backend-common/config';
 import { prismaClient } from "@repo/db/client";
 
-const wss = new WebSocketServer({ port: 8080 });
+const PORT = process.env.PORT || 8080;
+const wss = new WebSocketServer({ port: parseInt(String(PORT)) });
 
 interface User {
   ws: WebSocket,
@@ -35,6 +36,7 @@ function checkUser(token: string): string | null {
 wss.on('connection', function connection(ws, request) {
   const url = request.url;
   if (!url) {
+    ws.close();
     return;
   }
   const queryParams = new URLSearchParams(url.split('?')[1]);
@@ -42,15 +44,23 @@ wss.on('connection', function connection(ws, request) {
   const userId = checkUser(token);
 
   if (userId == null) {
-    ws.close()
-    return null;
+    ws.close();
+    return;
   }
 
-  users.push({
+  const user: User = {
     userId,
     rooms: [],
     ws
-  })
+  };
+  users.push(user);
+
+  ws.on('close', () => {
+    const index = users.indexOf(user);
+    if (index > -1) {
+      users.splice(index, 1);
+    }
+  });
 
   ws.on('message', async function message(data) {
     let parsedData;
@@ -70,7 +80,7 @@ wss.on('connection', function connection(ws, request) {
       if (!user) {
         return;
       }
-      user.rooms = user?.rooms.filter(x => x === parsedData.room);
+      user.rooms = user.rooms.filter(x => x !== parsedData.roomId);
     }
 
     console.log("message received")
@@ -102,4 +112,6 @@ wss.on('connection', function connection(ws, request) {
   });
 
 });
+
+console.log(`WebSocket server running on port ${PORT}`);
 

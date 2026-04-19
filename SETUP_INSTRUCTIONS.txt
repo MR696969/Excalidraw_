@@ -1,0 +1,203 @@
+# Excelidraw - Collaborative Drawing Application
+
+A real-time collaborative drawing application built with Next.js, WebSockets, and PostgreSQL.
+
+## 🚀 Features
+
+- Real-time collaborative drawing
+- User authentication and rooms
+- WebSocket-based communication
+- PostgreSQL database with Prisma ORM
+- Modern UI with Tailwind CSS
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 15, React 19, Tailwind CSS
+- **Backend**: Node.js, Express, WebSocket (ws)
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: JWT tokens
+- **Build Tool**: Turbo (monorepo)
+
+## 📋 Prerequisites
+
+Before running this project, make sure you have the following installed:
+
+1. **Node.js** (version 18 or higher)
+2. **pnpm** (package manager)
+3. **PostgreSQL** (version 17 recommended)
+
+### Installing Prerequisites
+
+#### Node.js
+Download from [nodejs.org](https://nodejs.org/) or use nvm:
+```bash
+nvm install 18
+nvm use 18
+```
+
+#### pnpm
+```bash
+npm install -g pnpm
+```
+
+#### PostgreSQL
+Download from [postgresql.org](https://www.postgresql.org/download/) or use your system's package manager.
+
+## ⚙️ Setup Instructions
+
+### 1. Clone the Repository
+```bash
+git clone <your-repo-url>
+cd week-22-excelidraw
+```
+
+### 2. Install Dependencies
+```bash
+pnpm install
+```
+
+### 3. Database Setup
+
+#### Create PostgreSQL Database
+```sql
+-- Connect to PostgreSQL as superuser (usually 'postgres')
+-- Create the database:
+CREATE DATABASE "chat-app";
+```
+
+#### Configure Environment Variables
+Create a `.env` file in the `packages/db/` directory:
+
+```env
+DATABASE_URL="postgresql://postgres:your_password@localhost:5432/chat-app"
+```
+
+**Note**: Replace `your_password` with your actual PostgreSQL password.
+
+### 4. Generate Prisma Client
+```bash
+cd packages/db
+npx prisma generate
+```
+
+### 5. Run Database Migrations
+```bash
+cd packages/db
+npx prisma migrate reset --force
+```
+
+### 6. Start Development Servers
+```bash
+pnpm dev
+```
+
+This will start all services:
+- **Web App**: http://localhost:3000
+- **Excelidraw Frontend**: http://localhost:3001
+- **HTTP Backend**: http://localhost:3002
+- **WebSocket Backend**: ws://localhost:8080
+
+## 🔧 Available Scripts
+
+### Root Level Scripts
+```bash
+pnpm install          # Install all dependencies
+pnpm dev             # Start all development servers
+pnpm build           # Build all packages
+pnpm lint            # Run linting
+pnpm format          # Format code with Prettier
+```
+
+### Database Scripts
+```bash
+cd packages/db
+npx prisma generate          # Generate Prisma client
+npx prisma migrate status    # Check migration status
+npx prisma migrate reset     # Reset database and apply migrations
+npx prisma studio           # Open Prisma Studio (database GUI)
+```
+
+## 📁 Project Structure
+
+```
+week-22-excelidraw/
+├── apps/
+│   ├── excelidraw-frontend/    # Main drawing application
+│   ├── http-backend/          # REST API backend
+│   ├── web/                   # Additional web interface
+│   └── ws-backend/            # WebSocket server
+├── packages/
+│   ├── backend-common/        # Shared backend utilities
+│   ├── common/                # Shared types and schemas
+│   ├── db/                    # Database schema and client
+│   ├── eslint-config/         # ESLint configuration
+│   ├── typescript-config/     # TypeScript configuration
+│   └── ui/                    # Shared UI components
+└── turbo.json                 # Turbo configuration
+```
+
+## 🔐 Environment Variables
+
+### Required Environment Variables
+
+**packages/db/.env**
+```
+DATABASE_URL="postgresql://postgres:your_password@localhost:5432/chat-app"
+```
+
+**packages/backend-common/src/config.ts** (if you need to change JWT secret)
+```typescript
+export const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+```
+
+## 🚀 Deployment
+
+### Build for Production
+```bash
+pnpm build
+```
+
+### Environment Setup for Production
+1. Set up PostgreSQL database on your hosting platform
+2. Update DATABASE_URL with production database URL
+3. Set JWT_SECRET environment variable
+4. Deploy each app to your hosting platform
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📝 Notes
+
+- The project uses a monorepo structure with pnpm workspaces
+- Turbo is used for task orchestration and caching
+- Database migrations are handled by Prisma
+- WebSocket connections are used for real-time collaboration
+- JWT tokens are used for authentication
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Port conflicts**: If ports 3000-3002 or 8080 are in use, the apps will automatically use the next available ports.
+
+2. **Database connection errors**: Ensure PostgreSQL is running and the DATABASE_URL is correct.
+
+3. **Prisma client errors**: Run `npx prisma generate` after any schema changes.
+
+4. **Build errors**: Make sure all dependencies are installed with `pnpm install`.
+
+### Database Issues
+```bash
+# Check database connection
+cd packages/db
+npx prisma migrate status
+
+# Reset database (⚠️ This will delete all data)
+npx prisma migrate reset --force
+```
+
