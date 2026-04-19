@@ -7,13 +7,12 @@
 //     return response.data.room.id;
 // }
 
-export default async function({
-    params
+export default async function Page({
+    params,
 }: {
-    params: {
-        slug: string
-    }
+    params: Promise<{ slug: string }>;
 }) {
+    await params;
     // const slug = (await params).slug;
     // const roomId = await getRoomId(slug);
     
